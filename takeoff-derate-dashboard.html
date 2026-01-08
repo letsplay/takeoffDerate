@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Analyse Takeoff Derate</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background-color: #0a1628;
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1e3a5f 0%, #0d2137 100%);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #2d4a6f;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        
+        .logo-text {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+        }
+        
+        .header-nav {
+            display: flex;
+            gap: 24px;
+        }
+        
+        .nav-item {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 14px;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            color: #fff;
+            background: rgba(59, 130, 246, 0.2);
+        }
+        
+        .nav-item.active {
+            background: #3b82f6;
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .notification-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            border-radius: 8px;
+            color: #94a3b8;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 18px;
+            height: 18px;
+            background: #ef4444;
+            border-radius: 50%;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        /* Main Layout */
+        .main-container {
+            display: flex;
+            min-height: calc(100vh - 73px);
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: #0f1f35;
+            padding: 24px;
+            border-right: 1px solid #1e3a5f;
+        }
+        
+        .sidebar-section {
+            margin-bottom: 24px;
+        }
+        
+        .sidebar-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+        
+        .filter-group {
+            margin-bottom: 16px;
+        }
+        
+        .filter-label {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-bottom: 6px;
+            display: block;
+        }
+        
+        .filter-select, .filter-input {
+            width: 100%;
+            padding: 10px 12px;
+            background: #1e3a5f;
+            border: 1px solid #2d4a6f;
+            border-radius: 6px;
+            color: #e2e8f0;
+            font-size: 14px;
+        }
+        
+        .filter-select:focus, .filter-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        
+        .date-range {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .date-range input {
+            flex: 1;
+        }
+        
+        .btn-apply {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border: none;
+            border-radius: 6px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 16px;
+        }
+        
+        .btn-apply:hover {
+            opacity: 0.9;
+        }
+        
+        /* Content Area */
+        .content {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+        
+        .page-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .page-subtitle {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+        
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .kpi-card {
+            background: linear-gradient(135deg, #1e3a5f 0%, #162d4a 100%);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #2d4a6f;
+        }
+        
+        .kpi-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        
+        .kpi-label {
+            font-size: 13px;
+            color: #94a3b8;
+        }
+        
+        .kpi-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        
+        .kpi-icon.blue { background: rgba(59, 130, 246, 0.2); }
+        .kpi-icon.green { background: rgba(34, 197, 94, 0.2); }
+        .kpi-icon.orange { background: rgba(249, 115, 22, 0.2); }
+        .kpi-icon.purple { background: rgba(139, 92, 246, 0.2); }
+        
+        .kpi-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .kpi-value.green { color: #22c55e; }
+        .kpi-value.orange { color: #f97316; }
+        
+        .kpi-change {
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .kpi-change.positive { color: #22c55e; }
+        .kpi-change.negative { color: #ef4444; }
+        
+        /* Main Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .card {
+            background: linear-gradient(135deg, #1e3a5f 0%, #162d4a 100%);
+            border-radius: 12px;
+            border: 1px solid #2d4a6f;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #2d4a6f;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .card-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            border-radius: 6px;
+            color: #94a3b8;
+            cursor: pointer;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        /* Derate Comparison Chart */
+        .derate-chart {
+            height: 280px;
+            position: relative;
+        }
+        
+        .chart-placeholder {
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(90deg, transparent 49%, #2d4a6f 49%, #2d4a6f 51%, transparent 51%),
+                linear-gradient(0deg, transparent 49%, #2d4a6f 49%, #2d4a6f 51%, transparent 51%);
+            background-size: 60px 60px;
+            position: relative;
+        }
+        
+        .chart-line {
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            right: 40px;
+            height: 200px;
+        }
+        
+        .chart-line-real {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #3b82f6;
+            clip-path: polygon(0 100%, 10% 60%, 20% 70%, 30% 40%, 40% 50%, 50% 30%, 60% 45%, 70% 25%, 80% 35%, 90% 20%, 100% 30%, 100% 100%);
+            transform: scaleY(60);
+            transform-origin: bottom;
+        }
+        
+        .chart-line-optimal {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #22c55e;
+            border-top: 2px dashed #22c55e;
+            opacity: 0.6;
+            transform: translateY(-120px);
+        }
+        
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 16px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #94a3b8;
+        }
+        
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+        
+        .legend-dot.blue { background: #3b82f6; }
+        .legend-dot.green { background: #22c55e; }
+        .legend-dot.orange { background: #f97316; }
+        
+        /* Progression Gauge */
+        .progression-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .gauge-wrapper {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            margin-bottom: 20px;
+        }
+        
+        .gauge-bg {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(
+                #1e3a5f 0deg,
+                #1e3a5f 360deg
+            );
+            position: relative;
+        }
+        
+        .gauge-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(
+                #22c55e 0deg,
+                #22c55e 252deg,
+                #f97316 252deg,
+                #f97316 288deg,
+                #1e3a5f 288deg
+            );
+        }
+        
+        .gauge-center {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            background: #0f1f35;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .gauge-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: #22c55e;
+        }
+        
+        .gauge-label {
+            font-size: 12px;
+            color: #64748b;
+        }
+        
+        .progression-details {
+            width: 100%;
+        }
+        
+        .progression-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #2d4a6f;
+        }
+        
+        .progression-item:last-child {
+            border-bottom: none;
+        }
+        
+        .progression-label {
+            font-size: 13px;
+            color: #94a3b8;
+        }
+        
+        .progression-value {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .progression-value.highlight {
+            color: #f97316;
+        }
+        
+        /* Flight Table */
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th {
+            text-align: left;
+            padding: 12px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #2d4a6f;
+        }
+        
+        .data-table td {
+            padding: 14px 16px;
+            font-size: 14px;
+            border-bottom: 1px solid #1e3a5f;
+        }
+        
+        .data-table tr:hover {
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        .flight-id {
+            font-weight: 600;
+            color: #3b82f6;
+        }
+        
+        .pilot-name {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .pilot-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .derate-cell {
+            font-family: 'SF Mono', Monaco, monospace;
+        }
+        
+        .derate-real { color: #3b82f6; }
+        .derate-optimal { color: #22c55e; }
+        
+        .margin-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .margin-badge.high {
+            background: rgba(249, 115, 22, 0.2);
+            color: #f97316;
+        }
+        
+        .margin-badge.medium {
+            background: rgba(234, 179, 8, 0.2);
+            color: #eab308;
+        }
+        
+        .margin-badge.low {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        
+        .status-badge.reviewed {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+        
+        .status-badge.pending {
+            background: rgba(234, 179, 8, 0.2);
+            color: #eab308;
+        }
+        
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+        
+        .action-btn {
+            padding: 6px 12px;
+            background: rgba(59, 130, 246, 0.2);
+            border: none;
+            border-radius: 6px;
+            color: #3b82f6;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        .action-btn:hover {
+            background: rgba(59, 130, 246, 0.3);
+        }
+        
+        /* Best Practices Panel */
+        .best-practices {
+            margin-top: 24px;
+        }
+        
+        .practice-item {
+            display: flex;
+            gap: 16px;
+            padding: 16px;
+            background: rgba(34, 197, 94, 0.1);
+            border-left: 3px solid #22c55e;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 12px;
+        }
+        
+        .practice-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(34, 197, 94, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        
+        .practice-content h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .practice-content p {
+            font-size: 13px;
+            color: #94a3b8;
+            line-height: 1.5;
+        }
+        
+        /* Footer */
+        .dashboard-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            background: #0f1f35;
+            border-top: 1px solid #1e3a5f;
+            font-size: 13px;
+            color: #64748b;
+        }
+        
+        .export-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .btn-export {
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid #2d4a6f;
+            border-radius: 6px;
+            color: #94a3b8;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .btn-export:hover {
+            border-color: #3b82f6;
+            color: #3b82f6;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1400px) {
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 1024px) {
+            .sidebar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">✈️</div>
+            <span class="logo-text">FlightPerf Analytics</span>
+        </div>
+        <nav class="header-nav">
+            <a href="#" class="nav-item">Vue d'ensemble</a>
+            <a href="#" class="nav-item active">Takeoff Derate</a>
+            <a href="#" class="nav-item">Contrails</a>
+            <a href="#" class="nav-item">Pilotes</a>
+            <a href="#" class="nav-item">Rapports</a>
+        </nav>
+        <div class="user-menu">
+            <button class="notification-btn">
+                🔔
+                <span class="notification-badge">3</span>
+            </button>
+            <div class="user-avatar">JD</div>
+        </div>
+    </header>
+    
+    <div class="main-container">
+        <!-- Sidebar Filters -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">Filtres</h3>
+                
+                <div class="filter-group">
+                    <label class="filter-label">Compagnie</label>
+                    <select class="filter-select">
+                        <option>Toutes les compagnies</option>
+                        <option>Air France</option>
+                        <option>Lufthansa</option>
+                        <option>British Airways</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">Type d'appareil</label>
+                    <select class="filter-select">
+                        <option>Tous les appareils</option>
+                        <option>A320neo</option>
+                        <option>A350-900</option>
+                        <option>B737 MAX</option>
+                        <option>B787-9</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">Aéroport de départ</label>
+                    <select class="filter-select">
+                        <option>Tous les aéroports</option>
+                        <option>CDG - Paris</option>
+                        <option>LHR - London</option>
+                        <option>FRA - Frankfurt</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">Pilote</label>
+                    <select class="filter-select">
+                        <option>Tous les pilotes</option>
+                        <option>Équipe Alpha</option>
+                        <option>Équipe Bravo</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">Période</label>
+                    <div class="date-range">
+                        <input type="date" class="filter-input" value="2025-01-01">
+                        <input type="date" class="filter-input" value="2025-01-07">
+                    </div>
+                </div>
+                
+                <button class="btn-apply">Appliquer les filtres</button>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">Best Practices</h3>
+                <div class="practice-item">
+                    <div class="practice-icon">📊</div>
+                    <div class="practice-content">
+                        <h4>Reduced Thrust Takeoff</h4>
+                        <p>Utiliser le derate maximal autorisé selon les conditions météo et la masse.</p>
+                    </div>
+                </div>
+                <div class="practice-item">
+                    <div class="practice-icon">🌡️</div>
+                    <div class="practice-content">
+                        <h4>Température & Altitude</h4>
+                        <p>Ajuster le derate selon l'ISA deviation et l'altitude pression.</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="content">
+            <h1 class="page-title">Analyse du Takeoff Derate</h1>
+            <p class="page-subtitle">Comparaison derate réel vs optimal • Dernière mise à jour : 07/01/2025 14:32</p>
+            
+            <!-- KPI Cards -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-label">Vols analysés</span>
+                        <div class="kpi-icon blue">✈️</div>
+                    </div>
+                    <div class="kpi-value">1,247</div>
+                    <div class="kpi-change positive">↑ +12% vs mois dernier</div>
+                </div>
+                
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-label">Derate moyen réel</span>
+                        <div class="kpi-icon blue">📉</div>
+                    </div>
+                    <div class="kpi-value">18.4%</div>
+                    <div class="kpi-change positive">↑ +2.1pt vs trimestre</div>
+                </div>
+                
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-label">Derate optimal moyen</span>
+                        <div class="kpi-icon green">🎯</div>
+                    </div>
+                    <div class="kpi-value green">24.7%</div>
+                    <div class="kpi-change">Calculé via API perf</div>
+                </div>
+                
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <span class="kpi-label">Marge de progression</span>
+                        <div class="kpi-icon orange">📈</div>
+                    </div>
+                    <div class="kpi-value orange">6.3 pt</div>
+                    <div class="kpi-change negative">↓ -0.8pt (amélioration)</div>
+                </div>
+            </div>
+            
+            <!-- Charts Row -->
+            <div class="dashboard-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Évolution Derate Réel vs Optimal (30 jours)</h2>
+                        <div class="card-actions">
+                            <button class="btn-icon">📊</button>
+                            <button class="btn-icon">⬇️</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="derate-chart">
+                            <div class="chart-placeholder">
+                                <div class="chart-line">
+                                    <div class="chart-line-real"></div>
+                                    <div class="chart-line-optimal"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-legend">
+                            <div class="legend-item">
+                                <div class="legend-dot blue"></div>
+                                <span>Derate réel</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-dot green"></div>
+                                <span>Derate optimal (API)</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-dot orange"></div>
+                                <span>Marge de progression</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Indicateur de Marge</h2>
+                        <div class="card-actions">
+                            <button class="btn-icon">ℹ️</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="progression-container">
+                            <div class="gauge-wrapper">
+                                <div class="gauge-bg"></div>
+                                <div class="gauge-fill"></div>
+                                <div class="gauge-center">
+                                    <span class="gauge-value">74%</span>
+                                    <span class="gauge-label">Performance</span>
+                                </div>
+                            </div>
+                            <div class="progression-details">
+                                <div class="progression-item">
+                                    <span class="progression-label">Derate réel moyen</span>
+                                    <span class="progression-value">18.4%</span>
+                                </div>
+                                <div class="progression-item">
+                                    <span class="progression-label">Derate optimal</span>
+                                    <span class="progression-value">24.7%</span>
+                                </div>
+                                <div class="progression-item">
+                                    <span class="progression-label">Marge de progression</span>
+                                    <span class="progression-value highlight">+6.3 pt</span>
+                                </div>
+                                <div class="progression-item">
+                                    <span class="progression-label">Économie moteur potentielle</span>
+                                    <span class="progression-value">~12% usure</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Flight Table -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Détail par vol</h2>
+                    <div class="card-actions">
+                        <button class="btn-icon">🔍</button>
+                        <button class="btn-icon">⚙️</button>
+                        <button class="btn-icon">⬇️</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Vol</th>
+                                    <th>Date</th>
+                                    <th>Pilote</th>
+                                    <th>Appareil</th>
+                                    <th>Route</th>
+                                    <th>Derate Réel</th>
+                                    <th>Derate Optimal</th>
+                                    <th>Marge</th>
+                                    <th>Statut</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><span class="flight-id">AF1234</span></td>
+                                    <td>07/01/25</td>
+                                    <td>
+                                        <div class="pilot-name">
+                                            <div class="pilot-avatar">PM</div>
+                                            <span>P. Martin</span>
+                                        </div>
+                                    </td>
+                                    <td>A320neo</td>
+                                    <td>CDG → BCN</td>
+                                    <td><span class="derate-cell derate-real">16.2%</span></td>
+                                    <td><span class="derate-cell derate-optimal">24.5%</span></td>
+                                    <td><span class="margin-badge high">+8.3 pt</span></td>
+                                    <td><span class="status-badge pending"><span class="status-dot"></span>À revoir</span></td>
+                                    <td><button class="action-btn">Détails</button></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="flight-id">AF2567</span></td>
+                                    <td>07/01/25</td>
+                                    <td>
+                                        <div class="pilot-name">
+                                            <div class="pilot-avatar">LD</div>
+                                            <span>L. Dubois</span>
+                                        </div>
+                                    </td>
+                                    <td>A350-900</td>
+                                    <td>CDG → JFK</td>
+                                    <td><span class="derate-cell derate-real">22.1%</span></td>
+                                    <td><span class="derate-cell derate-optimal">25.8%</span></td>
+                                    <td><span class="margin-badge medium">+3.7 pt</span></td>
+                                    <td><span class="status-badge reviewed"><span class="status-dot"></span>Validé</span></td>
+                                    <td><button class="action-btn">Détails</button></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="flight-id">AF3890</span></td>
+                                    <td>06/01/25</td>
+                                    <td>
+                                        <div class="pilot-name">
+                                            <div class="pilot-avatar">SB</div>
+                                            <span>S. Bernard</span>
+                                        </div>
+                                    </td>
+                                    <td>A320neo</td>
+                                    <td>ORY → LIS</td>
+                                    <td><span class="derate-cell derate-real">23.4%</span></td>
+                                    <td><span class="derate-cell derate-optimal">24.1%</span></td>
+                                    <td><span class="margin-badge low">+0.7 pt</span></td>
+                                    <td><span class="status-badge reviewed"><span class="status-dot"></span>Validé</span></td>
+                                    <td><button class="action-btn">Détails</button></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="flight-id">AF4521</span></td>
+                                    <td>06/01/25</td>
+                                    <td>
+                                        <div class="pilot-name">
+                                            <div class="pilot-avatar">CR</div>
+                                            <span>C. Rousseau</span>
+                                        </div>
+                                    </td>
+                                    <td>B787-9</td>
+                                    <td>CDG → SIN</td>
+                                    <td><span class="derate-cell derate-real">19.8%</span></td>
+                                    <td><span class="derate-cell derate-optimal">26.2%</span></td>
+                                    <td><span class="margin-badge high">+6.4 pt</span></td>
+                                    <td><span class="status-badge pending"><span class="status-dot"></span>À revoir</span></td>
+                                    <td><button class="action-btn">Détails</button></td>
+                                </tr>
+                                <tr>
+                                    <td><span class="flight-id">AF5678</span></td>
+                                    <td>06/01/25</td>
+                                    <td>
+                                        <div class="pilot-name">
+                                            <div class="pilot-avatar">ML</div>
+                                            <span>M. Laurent</span>
+                                        </div>
+                                    </td>
+                                    <td>A350-900</td>
+                                    <td>CDG → LAX</td>
+                                    <td><span class="derate-cell derate-real">21.5%</span></td>
+                                    <td><span class="derate-cell derate-optimal">25.0%</span></td>
+                                    <td><span class="margin-badge medium">+3.5 pt</span></td>
+                                    <td><span class="status-badge reviewed"><span class="status-dot"></span>Validé</span></td>
+                                    <td><button class="action-btn">Détails</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="dashboard-footer">
+        <div>
+            <span>FlightPerf Analytics v2.4.1</span> • 
+            <span>Données mises à jour toutes les 15 min</span> • 
+            <span>API Performance : ✅ Connectée</span>
+        </div>
+        <div class="export-actions">
+            <button class="btn-export">📄 Export PDF</button>
+            <button class="btn-export">📊 Export Excel</button>
+            <button class="btn-export">🔗 Partager Flight Ops</button>
+        </div>
+    </footer>
+</body>
+</html>
